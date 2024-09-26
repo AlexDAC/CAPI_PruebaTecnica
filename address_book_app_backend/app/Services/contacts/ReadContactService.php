@@ -5,7 +5,6 @@ namespace App\Services\contacts;
 use App\Helpers\QueryHelper;
 use App\Models\Contact;
 use App\Repositories\contacts\ReadContactInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ReadContactService implements ReadContactInterface

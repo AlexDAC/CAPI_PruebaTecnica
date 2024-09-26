@@ -8,7 +8,15 @@ use App\Repositories\phoneNumbers\WritePhoneNumberInterface;
 
 class WritePhoneNumberService implements WritePhoneNumberInterface
 {
-
+    /**
+     * execute and action depending of the type of status of the phone number, the actions can be:
+     * create, update or delete
+     *
+     * @param array $data
+     * @param Contact $contact
+     * 
+     * @return void
+     */
     public function executeAction(array $data, Contact $contact): void
     {
         if(!isset($data['phone_numbers']) || empty($data['phone_numbers'])){
