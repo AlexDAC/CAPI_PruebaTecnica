@@ -1,0 +1,29 @@
+.w-12-p{
+    width: 100%;
+    justify-content: end;
+}
+
+@media (min-width: 769px){
+    .w-12-p{
+        width: 20%!important;
+        justify-content: end;
+    }
+}
+
+
+@media (min-width: 992px){
+    .w-12-p{
+        width: 13%!important;
+        justify-content: end;
+    }
+}
+
+.w-search{
+    width: 100%;
+}
+
+@media (min-width: 769px){
+    .w-search{
+        width: 30% !important;
+    }
+}

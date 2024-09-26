@@ -1,0 +1,87 @@
+<div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mt-5 mb-4">
+    <h2>Contacts</h2>
+    <div class="d-flex align-items-center flex-wrap gap-3 gap-sm-5">
+        <a class="btn btn-primary" routerLink="/contacts/new"><i class="ri-add-line"></i>New Contact</a>
+    </div>
+</div>
+
+<div class="contrainer">
+  <div class="row justify-content-end">
+    <div class="input-group mb-3 w-search">
+      <span class="input-group-text" id="basic-addon1"><i class="ri-search-line"></i></span>
+      <input class="form-control" type="text" placeholder="Search" [(ngModel)]="searchInput" (input)="onSearch()">  
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th scope="col"># </th>
+          <th scope="col">Name</th>
+          <th scope="col">Notes</th>
+          <th scope="col">Birth</th>
+          <th scope="col">Web Page Url</th>
+          <th scope="col">Company Name</th>
+          <th scope="col">Phone Number</th>
+          <th scope="col" class="table-head-action"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="contacts.length; else emptyMessage">
+          <tr *ngFor="let contact of contacts">
+            <td>{{ contact.id }}</td>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.notes ? contact.notes : 'Without Notes'}}</td>
+            <td>{{ contact.birth_date}}</td>
+            <td>{{ contact.web_page_url ? contact.web_page_url : 'Withour Web Page'}}</td>
+            <td>{{ contact.company_name ? contact.company_name : 'Without Company'}}</td>
+            <td>{{ contact.phone_numbers.length > 0 ? contact.phone_numbers[0].phone_number : 'Without Number'}}</td>
+            <td class="table-data-action">
+              <div>
+                <a [routerLink]="['/contacts', contact.id, 'edit']"><i class="ri-edit-box-line text-primary"></i></a>
+                <button class="btn btn-link p-0"><i class="ri-delete-bin-2-line text-danger"></i></button>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-template #emptyMessage>
+          <tr>
+            <td colspan="6">There aren't records to show</td>
+          </tr>
+        </ng-template>
+      </tbody>
+    </table>
+  </div>
+    <div class="container">
+        <div class="row justify-content-end col-12">
+            <div class="input-group w-12-p col-auto h-75">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Size: {{contactResponse.per_page}}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><button class="dropdown-item" type="button" (click)="onChangeSize(5)">5</button></li>
+                    <li><button class="dropdown-item" type="button" (click)="onChangeSize(10)">10</button></li>
+                    <li><button class="dropdown-item" type="button" (click)="onChangeSize(20)">20</button></li>
+                    <li><button class="dropdown-item" type="button" (click)="onChangeSize(50)">50</button></li>
+                    <li><button class="dropdown-item" type="button" (click)="onChangeSize(100)">100</button></li>
+                </ul>
+            </div>
+            <span class="col-auto align-self-center">show {{contactResponse.to}} people of {{contactResponse.total}}</span>
+            <nav class="col-auto">
+                <ul class="pagination .justify-content-end">
+                <li class="page-item">
+                    <a class="page-link" (click)="onPreviousPage()" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" *ngFor="let in of this.pagination; let i = index"><a class="page-link" (click)="onPageChange(this.pagination[i])" [ngClass]="contactResponse.current_page == (this.pagination[i]) ? 'active' : ''">{{this.pagination[i]}}</a></li>
+                <li class="page-item">
+                    <a class="page-link" (click)="onNextPage()" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

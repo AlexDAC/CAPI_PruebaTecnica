@@ -56,9 +56,12 @@ class ReadContactService implements ReadContactInterface
         } else {
             $contactsQuery = QueryHelper::querySort(
                 $contactsQuery,
-                $contactsQuery['sortBy'],
-                $contactsQuery['sortOrder'],
-                'contacts'
+                $queryFilters['sortBy'],
+                $queryFilters['sortOrder'],
+                'contacts',
+                [
+                    'phone_numbers' => ['phone_numbers', 'phone_number', 'id', 'contact_id']
+                ]
             );
         }
 
