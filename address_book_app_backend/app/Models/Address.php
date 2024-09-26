@@ -32,10 +32,9 @@ class Address extends Model
         $full_address = ($this->street ? $this->street.' ' : ' ')
                         .($this->external_number ? $this->external_number.' ' : ' ') 
                         .($this->internal_number ? $this->internal_number.', ' : '')
-                        .($this->community ? $this->community.', ' : ', ')
+                        .($this->neighbourhood ? $this->neighbourhood.', ' : ', ')
                         .($this->zip_code ? $this->zip_code.', ' : ', ')
                         .($this->city ? $this->city.', ' : ', ')
-                        .($this->municipality ? $this->municipality.', ' : ', ')
                         .($this->state ? $this->state.', ' : ', ')
                         .($this->country ? $this->country : '');
         
