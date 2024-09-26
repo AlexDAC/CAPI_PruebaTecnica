@@ -15,7 +15,7 @@ class Address extends Model
         'street', 
         'external_number',
         'internal_number',
-        'neighborhood',
+        'neighbourhood',
         'zip_code',
         'city',
         'state',
