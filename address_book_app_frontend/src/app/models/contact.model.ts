@@ -11,7 +11,7 @@ export interface Contact {
     company_name: string;
     addresses?: Address[];
     emails?: Email[];
-    phoneNumbers: PhoneNumber[];    
+    phone_numbers: PhoneNumber[];    
     created_at?: string;
     updated_at?: string;
 }
