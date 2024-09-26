@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use App\Helpers\QueryHelper;
 use App\Http\Requests\UpsertContactRequest;
 use App\Models\Contact;
 use App\Repositories\addresses\WriteAddressInterface;
@@ -53,7 +54,8 @@ class ContactController extends Controller
     public function index(Request $request)
     {
         try {
-            $contacts = $this->readContactInterface->getAll();
+            $queryFilters = QueryHelper::ExtractQueryFiltersFromRequest($request);
+            $contacts = $this->readContactInterface->getAll($queryFilters);
             return ApiResponse::success(['contacts' => $contacts]);
         } catch (Exception | Error $e) {
             return ApiResponse::unprocessable(null, null, $e->getMessage());
