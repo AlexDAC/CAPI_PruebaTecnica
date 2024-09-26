@@ -7,6 +7,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface ReadContactInterface
 {
-    public function getAll():LengthAwarePaginator;
+    public function getAll(array $queryFilters):LengthAwarePaginator;
     public function getById(Contact $contact):Contact;
 }
