@@ -8,6 +8,15 @@ use App\Repositories\emails\WriteEmailInterface;
 
 class WriteEmailService implements WriteEmailInterface 
 {   
+    /**
+     * execute and action depending of the type of status of the email, the actions can be:
+     * create, update or delete
+     *
+     * @param array $data
+     * @param Contact $contact
+     * 
+     * @return void
+     */
     public function executeAction(array $data, Contact $contact): void
     {
         if(!isset($data['emails']) || empty($data['emails'])){

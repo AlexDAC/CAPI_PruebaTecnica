@@ -8,7 +8,15 @@ use App\Repositories\addresses\WriteAddressInterface;
 
 class WriteAddressService implements WriteAddressInterface
 {
-    
+    /**
+     * execute and action depending of the type of status of the address, the actions can be:
+     * create, update or delete
+     *
+     * @param array $data
+     * @param Contact $contact
+     * 
+     * @return void
+     */    
     public function executeAction(array $data, Contact $contact): void
     {
         if(!isset($data['addresses']) || empty($data['addresses'])){
