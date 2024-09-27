@@ -1,0 +1,58 @@
+<div class="contrainer">
+  <div class="row justify-content-end">
+    <div class="input-group mb-3 w-search">
+      <span class="input-group-text" id="basic-addon1"><i class="ri-search-line"></i></span>
+      <input class="form-control" type="text" placeholder="Search" [(ngModel)]="searchInput" (input)="onSearch()">  
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th scope="col"># </th>
+          <th scope="col">Email</th>
+          <th scope="col" class="table-head-action"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="emails.length; else emptyMessage">
+          <tr *ngFor="let email of emails; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ email.email }}</td>
+            <td class="table-data-action">
+              <div>
+                  <button class="btn btn-link p-0" (click)="editEmail(email)"><i class="ri-edit-box-line text-primary"></i></button>
+                  <button class="btn btn-link p-0" (click)="deleteEmail(email.id)"><i class="ri-delete-bin-2-line text-danger"></i></button>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-template #emptyMessage>
+          <tr>
+            <td colspan="6">There aren't records to show</td>
+          </tr>
+        </ng-template>
+      </tbody>
+    </table>
+  </div>
+    <div class="container">
+        <div class="row justify-content-end col-12">
+            <span class="col-auto align-self-center">show {{emailResponse?.to}} people of {{emailResponse?.total}}</span>
+            <nav class="col-auto">
+                <ul class="pagination .justify-content-end">
+                <li class="page-item">
+                    <a class="page-link" (click)="onPreviousPage()" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" *ngFor="let in of this.pagination; let i = index"><a class="page-link" (click)="onPageChange(this.pagination[i])" [ngClass]="emailResponse?.current_page == (this.pagination[i]) ? 'active' : ''">{{this.pagination[i]}}</a></li>
+                <li class="page-item">
+                    <a class="page-link" (click)="onNextPage()" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

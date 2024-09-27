@@ -1,21 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Contact, ContactResponseWithPagination } from '../../../models/contact.model';
-import { ContactService } from '../../../services/contacts/contact.service';
 import { debounceTime } from 'rxjs/operators';
 import Toastify from 'toastify-js';
+import { ActivatedRoute } from '@angular/router';
+import { EmailService } from '../../../services/emails/email.service';
+import { Email, EmailResponseWithPagination } from '../../../models/email.model';
 
 @Component({
-  selector: 'app-contact-table',
-  templateUrl: './contact-table.component.html',
-  styleUrl: './contact-table.component.scss'
+  selector: 'app-contact-emails-table',
+  templateUrl: './contact-emails-table.component.html',
+  styleUrl: './contact-emails-table.component.scss'
 })
-export class ContactTableComponent implements OnInit, OnDestroy {
+export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private readonly debounceTimeMs = 300;
-  contacts: Contact[] = [];
-  contactResponse: ContactResponseWithPagination;
-  contactSelected?: Contact;
+  emails: Email[] = [];
+  emailResponse?: EmailResponseWithPagination;
+  contactId?: number;
+  emailSelected?: Email;
   searchInput: string = '';
   sortBy?: string;
   sortOrder?: string;
@@ -23,23 +25,12 @@ export class ContactTableComponent implements OnInit, OnDestroy {
   page: number = 1;
   pagination: number[] = [];
 
-  constructor(private contactService: ContactService){
-    this.contactResponse = {
-      current_page: 1,
-      data: [],
-      first_page_url: '',
-      from: 1,
-      last_page: 1,
-      last_page_url: '',
-      next_page_url: '',
-      per_page: 10,
-      prev_page_url: '',
-      to: 1,
-      total: 0
-    }
+  constructor(private emailService: EmailService, private route: ActivatedRoute){
+   
   }
 
   ngOnInit(): void {
+    this.contactId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadDataIntoTable();
     this.searchSubject.pipe(debounceTime(this.debounceTimeMs)).subscribe((searchValue) => {
       this.performSearch(searchValue);
@@ -53,12 +44,17 @@ export class ContactTableComponent implements OnInit, OnDestroy {
   }
 
   counter() {
-    if(this.page >= 1 && this.page <= 3) {
-      this.pagination = [1,2,3,4,5]
-    } else if(this.page >= this.contactResponse.last_page-2 && this.page <= this.contactResponse.last_page){
-      this.pagination = [this.contactResponse.last_page - 4, this.contactResponse.last_page - 3, this.contactResponse.last_page - 2, this.contactResponse.last_page - 1, this.contactResponse.last_page];
-    } else {
-      this.pagination = [this.page - 2, this.page - 1, this.page, this.page + 1, this.page + 2];
+    if(this.emailResponse && this.emailResponse.data.length > 0){
+      if(this.emailResponse.data.length > 0){
+  
+        if(this.page >= 1 && this.page <= 3) {
+          this.pagination = [1,2,3,4,5]
+        } else if(this.page >= this.emailResponse.last_page-2 && this.page <= this.emailResponse.last_page){
+          this.pagination = [this.emailResponse.last_page - 4, this.emailResponse.last_page - 3, this.emailResponse.last_page - 2, this.emailResponse.last_page - 1, this.emailResponse.last_page];
+        } else {
+          this.pagination = [this.page - 2, this.page - 1, this.page, this.page + 1, this.page + 2];
+        }
+      }
     }
   }
 
@@ -69,16 +65,15 @@ export class ContactTableComponent implements OnInit, OnDestroy {
   }
 
   onNextPage(){
-    if(this.page != this.contactResponse.last_page){
+    if(this.page != this.emailResponse?.last_page){
       this.page = this.page + 1;
       this.counter();
       this.loadDataIntoTable();
     }
   }
 
-  onView(contact: Contact){
-    this.contactSelected = contact;
-
+  editEmail(email: Email){
+    this.emailSelected = email;
   }
 
   onPreviousPage(){
@@ -115,18 +110,20 @@ export class ContactTableComponent implements OnInit, OnDestroy {
     this.loadDataIntoTable(searchValue)
   }
   
-  deleteContact(id: number): void {
-    this.contactService.deleteContact(id).subscribe(response => {
-      this.showSuccessToast('Contact deleted successfully');
+  deleteEmail(id: number): void {
+    this.emailService.deleteEmail(id).subscribe(response => {
+      this.showSuccessToast('Phone number deleted successfully');
       this.loadDataIntoTable();
     });
   }
 
   private loadDataIntoTable(searchBy: string = ''): void {
-    this.contactService.getAllContacts(searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
-      this.contacts = response.data.contacts.data;
-      this.contactResponse = response.data.contacts;
-    });
+    if(this.contactId){
+      this.emailService.getAllEmailsByContact(this.contactId ,searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
+        this.emails = response.data.emails.data;
+        this.emailResponse = response.data.emails;
+      });
+    }
   }
 
   private showSuccessToast(message: string): void {

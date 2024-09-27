@@ -1,21 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Contact, ContactResponseWithPagination } from '../../../models/contact.model';
-import { ContactService } from '../../../services/contacts/contact.service';
 import { debounceTime } from 'rxjs/operators';
 import Toastify from 'toastify-js';
+import { ActivatedRoute } from '@angular/router';
+import { AddressService } from '../../../services/addresses/address.service';
+import { Address, AddressResponseWithPagination } from '../../../models/address.model';
 
 @Component({
-  selector: 'app-contact-table',
-  templateUrl: './contact-table.component.html',
-  styleUrl: './contact-table.component.scss'
+  selector: 'app-contact-address-table',
+  templateUrl: './contact-address-table.component.html',
+  styleUrl: './contact-address-table.component.scss'
 })
-export class ContactTableComponent implements OnInit, OnDestroy {
+export class ContactAddressTableComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private readonly debounceTimeMs = 300;
-  contacts: Contact[] = [];
-  contactResponse: ContactResponseWithPagination;
-  contactSelected?: Contact;
+  addresses: Address[] = [];
+  addressResponse?: AddressResponseWithPagination;
+  contactId?: number;
+  addressSelected?: Address;
   searchInput: string = '';
   sortBy?: string;
   sortOrder?: string;
@@ -23,29 +25,17 @@ export class ContactTableComponent implements OnInit, OnDestroy {
   page: number = 1;
   pagination: number[] = [];
 
-  constructor(private contactService: ContactService){
-    this.contactResponse = {
-      current_page: 1,
-      data: [],
-      first_page_url: '',
-      from: 1,
-      last_page: 1,
-      last_page_url: '',
-      next_page_url: '',
-      per_page: 10,
-      prev_page_url: '',
-      to: 1,
-      total: 0
-    }
+  constructor(private addressService: AddressService, private route: ActivatedRoute){
+   
   }
 
   ngOnInit(): void {
+    this.contactId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadDataIntoTable();
     this.searchSubject.pipe(debounceTime(this.debounceTimeMs)).subscribe((searchValue) => {
       this.performSearch(searchValue);
     });
     this.counter();
-    
   }
 
   ngOnDestroy() {
@@ -53,12 +43,17 @@ export class ContactTableComponent implements OnInit, OnDestroy {
   }
 
   counter() {
-    if(this.page >= 1 && this.page <= 3) {
-      this.pagination = [1,2,3,4,5]
-    } else if(this.page >= this.contactResponse.last_page-2 && this.page <= this.contactResponse.last_page){
-      this.pagination = [this.contactResponse.last_page - 4, this.contactResponse.last_page - 3, this.contactResponse.last_page - 2, this.contactResponse.last_page - 1, this.contactResponse.last_page];
-    } else {
-      this.pagination = [this.page - 2, this.page - 1, this.page, this.page + 1, this.page + 2];
+    if(this.addressResponse && this.addressResponse.data.length > 0){
+      if(this.addressResponse.data.length > 0){
+  
+        if(this.page >= 1 && this.page <= 3) {
+          this.pagination = [1,2,3,4,5]
+        } else if(this.page >= this.addressResponse.last_page-2 && this.page <= this.addressResponse.last_page){
+          this.pagination = [this.addressResponse.last_page - 4, this.addressResponse.last_page - 3, this.addressResponse.last_page - 2, this.addressResponse.last_page - 1, this.addressResponse.last_page];
+        } else {
+          this.pagination = [this.page - 2, this.page - 1, this.page, this.page + 1, this.page + 2];
+        }
+      }
     }
   }
 
@@ -69,16 +64,15 @@ export class ContactTableComponent implements OnInit, OnDestroy {
   }
 
   onNextPage(){
-    if(this.page != this.contactResponse.last_page){
+    if(this.page != this.addressResponse?.last_page){
       this.page = this.page + 1;
       this.counter();
       this.loadDataIntoTable();
     }
   }
 
-  onView(contact: Contact){
-    this.contactSelected = contact;
-
+  editAddress(address: Address){
+    this.addressSelected = address;
   }
 
   onPreviousPage(){
@@ -115,18 +109,21 @@ export class ContactTableComponent implements OnInit, OnDestroy {
     this.loadDataIntoTable(searchValue)
   }
   
-  deleteContact(id: number): void {
-    this.contactService.deleteContact(id).subscribe(response => {
-      this.showSuccessToast('Contact deleted successfully');
+  deleteAddress(id: number): void {
+    this.addressService.deleteAddress(id).subscribe(response => {
+      this.showSuccessToast('Address deleted successfully');
       this.loadDataIntoTable();
     });
   }
 
   private loadDataIntoTable(searchBy: string = ''): void {
-    this.contactService.getAllContacts(searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
-      this.contacts = response.data.contacts.data;
-      this.contactResponse = response.data.contacts;
-    });
+    if(this.contactId){
+      this.addressService.getAllAddressesByContact(this.contactId ,searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
+        this.addresses = response.data.addresses.data;
+        console.log(this.addresses);
+        this.addressResponse = response.data.addresses;
+      });
+    }
   }
 
   private showSuccessToast(message: string): void {
@@ -141,4 +138,5 @@ export class ContactTableComponent implements OnInit, OnDestroy {
       }
     }).showToast();
   }
+
 }
