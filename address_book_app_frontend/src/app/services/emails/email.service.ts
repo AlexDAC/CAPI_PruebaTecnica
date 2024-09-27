@@ -1,26 +1,27 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { Contact, ContactResponse, DataByIdResponse, DataResponse, FormContact } from '../../models/contact.model';
+import { DataByIdResponse, DataResponse, EmailForm } from '../../models/email.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ContactService {
+export class EmailService {
   private readonly API_URL = environment.apiUrl + 'contacts';
   private url:string = '';
-
   constructor(private http: HttpClient) { }
 
-  getAllContacts(
+
+  getAllEmailsByContact(
+    contactId: number,
     searchBy: string, 
     sortBy?: string, 
     sortOrder?: string, 
     page:number = 1, 
     pageSize: number = 10
   ): Observable<DataResponse> {
-    this.url = `${this.API_URL}?searchBy=${searchBy}`;
+    this.url = `${this.API_URL}/${contactId}/emails?searchBy=${searchBy}`;
     if(sortBy){
       this.url += `&sortBy=${sortBy}`;
     }
@@ -33,20 +34,20 @@ export class ContactService {
     return this.http.get<DataResponse>(this.url);
   }
 
-  getContactById(id: number): Observable<DataByIdResponse> {
-    this.url = `${this.API_URL}/${id}`;
+  getEmailById(id: number): Observable<DataByIdResponse> {
+    this.url = `${this.API_URL}/emails/${id}`;
     return this.http.get<DataByIdResponse>(this.url);
   }
 
-  createContact(data: FormContact): Observable<DataByIdResponse> {
-    return this.http.post<DataByIdResponse>(`${this.API_URL}`, data);
+  createEmail(contactId: number, data: EmailForm): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/${contactId}/emails`, data);
   }
 
-  updateContact(id: number, data: FormContact): Observable<DataByIdResponse> {
-    return this.http.put<DataByIdResponse>(`${this.API_URL}/${id}`, data);
+  updateEmail(id: number, data: EmailForm): Observable<void> {
+    return this.http.put<void>(`${this.API_URL}/emails/${id}`, data);
   }
 
-  deleteContact(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/${id}`);
+  deleteEmail(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/emails/${id}`);
   }
 }
