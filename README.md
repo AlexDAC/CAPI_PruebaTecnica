@@ -50,3 +50,22 @@ despues ejecutaremos en la terminal los comandos
 
 finalmente ejecutaremos en la terminal el servicio con el comando
 **php artisan serve**
+
+## Instalación Frontend
+Ingresar a la carpeta del frontend desde la terminal ejecutando el siguiente comando
+**cd address_book_app_frontend**
+
+ejecutaremos el comando **npm install**
+
+una vez terminando de instalar todo realizaremos la ejecución del comando
+**ng serve -o**
+para levantar el servicio y a su vez realizar un building de que todo salio bien.
+
+
+## librerias, dependencias en backend
+
+## librerias, dependencias en frontend
+bootstrap: 5.3.3
+popper.js: 1.16.1
+remixicon: 4.3.0
+toastify-js: 1.12.0
