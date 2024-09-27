@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { DataByIdResponse, DataResponse, EmailForm } from '../../models/email.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,26 @@ import { Observable } from 'rxjs';
 export class EmailService {
   private readonly API_URL = environment.apiUrl + 'contacts';
   private url:string = '';
+  emailSelected = new BehaviorSubject<number>(0);
+  reloadEmailTable = new BehaviorSubject<boolean>(false);
+
   constructor(private http: HttpClient) { }
+
+  setEmailSelected(emailId: number){
+    this.emailSelected.next(emailId);
+  }
+
+  getEmailSelected(){
+    return this.emailSelected.asObservable();
+  }
+
+  setReloadEmailTable(reload: boolean) {
+    this.reloadEmailTable.next(reload);
+  }
+
+  getReloadEmailTable(){
+    return this.reloadEmailTable.asObservable();
+  }
 
 
   getAllEmailsByContact(

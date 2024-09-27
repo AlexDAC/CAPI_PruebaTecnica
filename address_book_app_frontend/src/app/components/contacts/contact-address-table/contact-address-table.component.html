@@ -2,7 +2,7 @@
     <div class="row justify-content-end">
       <div class="input-group mb-3 w-search">
         <span class="input-group-text" id="basic-addon1"><i class="ri-search-line"></i></span>
-        <input class="form-control" type="text" placeholder="Search" [(ngModel)]="searchInput" (input)="onSearch()">  
+        <input class="form-control" type="text" placeholder="Search" [(ngModel)]="searchAddressInput" (input)="onSearchAddress()">  
       </div>
     </div>
     <div class="table-responsive mb-5">
@@ -21,7 +21,7 @@
               <td>{{ address.full_address }}</td>
               <td class="table-data-action">
                 <div>
-                    <button class="btn btn-link p-0" (click)="editAddress(address)"><i class="ri-edit-box-line text-primary"></i></button>
+                    <button class="btn btn-link p-0" (click)="editAddress(address.id)"><i class="ri-edit-box-line text-primary"></i></button>
                     <button class="btn btn-link p-0" (click)="deleteAddress(address.id)"><i class="ri-delete-bin-2-line text-danger"></i></button>
                 </div>
               </td>

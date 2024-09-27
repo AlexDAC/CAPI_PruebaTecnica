@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import Toastify from 'toastify-js';
 import { ActivatedRoute } from '@angular/router';
@@ -15,6 +15,8 @@ export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private readonly debounceTimeMs = 300;
   emails: Email[] = [];
+  emailService$?: Subscription;
+  reloadTable:boolean = false;
   emailResponse?: EmailResponseWithPagination;
   contactId?: number;
   emailSelected?: Email;
@@ -26,7 +28,15 @@ export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
   pagination: number[] = [];
 
   constructor(private emailService: EmailService, private route: ActivatedRoute){
-   
+    this.emailService.getReloadEmailTable().subscribe({
+      next: (reload) => {
+        this.reloadTable = reload;
+        this.loadDataIntoTable();
+      },
+      error: () => {
+        this.reloadTable = false;
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -35,7 +45,6 @@ export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
     this.searchSubject.pipe(debounceTime(this.debounceTimeMs)).subscribe((searchValue) => {
       this.performSearch(searchValue);
     });
-    this.counter();
     
   }
 
@@ -44,11 +53,12 @@ export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
   }
 
   counter() {
-    if(this.emailResponse && this.emailResponse.data.length > 0){
+    if(this.emailResponse){
       if(this.emailResponse.data.length > 0){
-  
-        if(this.page >= 1 && this.page <= 3) {
-          this.pagination = [1,2,3,4,5]
+        if(this.emailResponse.last_page >= 1 && this.emailResponse.last_page <= 5) {
+          for(let i=0; i<this.emailResponse.last_page; i++){
+            this.pagination[i] = i + 1;
+          }
         } else if(this.page >= this.emailResponse.last_page-2 && this.page <= this.emailResponse.last_page){
           this.pagination = [this.emailResponse.last_page - 4, this.emailResponse.last_page - 3, this.emailResponse.last_page - 2, this.emailResponse.last_page - 1, this.emailResponse.last_page];
         } else {
@@ -58,28 +68,26 @@ export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
     }
   }
 
+
   onPageChange(page: number){
     this.page = page;
-    this.counter();
     this.loadDataIntoTable();
   }
 
   onNextPage(){
     if(this.page != this.emailResponse?.last_page){
       this.page = this.page + 1;
-      this.counter();
       this.loadDataIntoTable();
     }
   }
 
-  editEmail(email: Email){
-    this.emailSelected = email;
+  editEmail(emailId: number){
+    this.emailService.setEmailSelected(emailId);
   }
 
   onPreviousPage(){
     if(this.page != 1){
       this.page = this.page - 1;
-      this.counter();
       this.loadDataIntoTable();
     }
   }
@@ -106,7 +114,6 @@ export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
 
   performSearch(searchValue: string) {
     this.page = 1;
-    this.counter();
     this.loadDataIntoTable(searchValue)
   }
   
@@ -122,6 +129,7 @@ export class ContactEmailsTableComponent  implements OnInit, OnDestroy {
       this.emailService.getAllEmailsByContact(this.contactId ,searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
         this.emails = response.data.emails.data;
         this.emailResponse = response.data.emails;
+        this.counter();
       });
     }
   }

@@ -12,27 +12,19 @@ import { PhoneNumberService } from '../../../services/phone-numbers/phone-number
 })
 export class ContactTabsComponent implements OnInit {
   contactId?: number;
-  phoneNumberSelected?: PhoneNumber[];
   contactData?: Contact;
   
   constructor(
     private contactService: ContactService,
-    private phoneNumberService: PhoneNumberService,
     private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
     this.loadDataIntoForm();
-    this.getPhoneNumber();
   }
 
   getFormTitle(): string {
     return this.contactId ? 'Edit Contact Information' : 'New Contact';
-  }
-
-  getPhoneNumber(){
-    this.phoneNumberSelected = this.phoneNumberService.getPhoneNumberSelected();
-    console.log(this.phoneNumberSelected);
   }
 
   private loadDataIntoForm(): void {

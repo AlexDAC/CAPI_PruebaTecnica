@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Address, AddressForm } from '../../../models/address.model';
 import { AddressService } from '../../../services/addresses/address.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-contact-address-form',
@@ -11,8 +12,8 @@ import { AddressService } from '../../../services/addresses/address.service';
   styleUrl: './contact-address-form.component.scss'
 })
 export class ContactAddressFormComponent implements OnInit {
-  addressSelected?: Address[];
-  phoneNumberId?: number;
+  addressId?: number;
+  addressService$?: Subscription;
   contactId: number;
   addressForm: FormGroup  = new FormGroup({  
     street: new FormControl('', [Validators.required, Validators.maxLength(255)]),
@@ -29,7 +30,6 @@ export class ContactAddressFormComponent implements OnInit {
 
   constructor(
     private addressService: AddressService,
-    private router: Router,
     private route: ActivatedRoute
   ) { 
     this.addressFormData = {
@@ -44,6 +44,15 @@ export class ContactAddressFormComponent implements OnInit {
       country: ''
     };
     this.contactId = Number(this.route.snapshot.paramMap.get('id'));
+    this.addressService.getAddressSelected().subscribe({
+      next: (addressId) => {
+        this.addressId = addressId;
+        this.loadDataIntoForm();
+      },
+      error: () => {
+        this.addressId = undefined;
+      }
+    });
   }
 
   ngOnInit():void {
@@ -51,27 +60,26 @@ export class ContactAddressFormComponent implements OnInit {
   }
 
   private loadDataIntoForm(): void {
-    this.contactId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.contactId) {
-      this.addressService.getAddressById(this.contactId).subscribe(response => {       
-        this.addressForm.patchValue(response.data.address);
+    if (this.addressId) {
+      this.addressService.getAddressById(this.addressId).subscribe(response => {       
+        this.addressForm.patchValue(response.data.addresses);
       });
     }
   }
 
   savePhoneNumber(): void {
-    if (this.contactId && this.phoneNumberId) {
-      this.addressService.updateAddress(this.contactId, this.addressForm.value).subscribe(response => {
-        this.showSuccessToast("Phone Number Updated Successfully");
-        this.router.navigate(['/contacts', this.contactId, 'edit']);
+    if (this.addressId) {
+      this.addressService.updateAddress(this.addressId, this.addressForm.value).subscribe(response => {
+        this.showSuccessToast("Address Updated Successfully");
+        this.addressService.setAddressSelected(0);
+        this.addressService.setReloadAddressTable(true);
+        this.addressForm.reset();
       });   
     } else {
       this.addressService.createAddress(this.contactId, this.addressForm.value).subscribe(response => {
-        this.showSuccessToast("Phone Number Created Successfully");
-        this.router.navigateByUrl('/contacts/' + this.contactId + '/edit',{skipLocationChange:true}).then(()=>{
-          this.router.navigate([`/contacts/${this.contactId}/edit`]).then(()=>{
-          })
-        });
+        this.showSuccessToast("Address Created Successfully");
+        this.addressService.setReloadAddressTable(true);
+        this.addressForm.reset();
       });
     }  
   }

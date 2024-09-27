@@ -54,7 +54,7 @@ export interface DataByIdResponse {
 }
 
 export interface AddressResponse {
-    address: Address;
+    addresses: Address;
 }
 
 

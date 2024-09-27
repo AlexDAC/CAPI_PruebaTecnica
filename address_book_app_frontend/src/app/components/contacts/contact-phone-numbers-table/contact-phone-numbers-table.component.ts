@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { PhoneNumber, PhoneNumberResponseWithPagination } from '../../../models/phone_number.model';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { PhoneNumberService } from '../../../services/phone-numbers/phone-number.service';
 import Toastify from 'toastify-js';
@@ -15,6 +15,8 @@ export class ContactPhoneNumbersTableComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private readonly debounceTimeMs = 300;
   phoneNumbers: PhoneNumber[] = [];
+  phoneNumberService$?: Subscription;
+  reloadTable:boolean = false;
   phoneNumberResponse?: PhoneNumberResponseWithPagination;
   contactId?: number;
   phoneNumberSelected?: PhoneNumber;
@@ -26,7 +28,15 @@ export class ContactPhoneNumbersTableComponent implements OnInit, OnDestroy {
   pagination: number[] = [];
 
   constructor(private phoneNumberService: PhoneNumberService, private route: ActivatedRoute){
-   
+    this.phoneNumberService.getReloadPhoneNumberTable().subscribe({
+      next: (reload) => {
+        this.reloadTable = reload;
+        this.loadDataIntoTable();
+      },
+      error: () => {
+        this.reloadTable = false;
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -34,9 +44,7 @@ export class ContactPhoneNumbersTableComponent implements OnInit, OnDestroy {
     this.loadDataIntoTable();
     this.searchSubject.pipe(debounceTime(this.debounceTimeMs)).subscribe((searchValue) => {
       this.performSearch(searchValue);
-    });
-    this.counter();
-    
+    });    
   }
 
   ngOnDestroy() {
@@ -44,11 +52,12 @@ export class ContactPhoneNumbersTableComponent implements OnInit, OnDestroy {
   }
 
   counter() {
-    if(this.phoneNumberResponse && this.phoneNumberResponse.data.length > 0){
+    if(this.phoneNumberResponse){
       if(this.phoneNumberResponse.data.length > 0){
-  
-        if(this.page >= 1 && this.page <= 3) {
-          this.pagination = [1,2,3,4,5]
+        if(this.phoneNumberResponse.last_page >= 1 && this.phoneNumberResponse.last_page <= 5) {
+          for(let i=0; i<this.phoneNumberResponse.last_page; i++){
+            this.pagination[i] = i + 1;
+          }
         } else if(this.page >= this.phoneNumberResponse.last_page-2 && this.page <= this.phoneNumberResponse.last_page){
           this.pagination = [this.phoneNumberResponse.last_page - 4, this.phoneNumberResponse.last_page - 3, this.phoneNumberResponse.last_page - 2, this.phoneNumberResponse.last_page - 1, this.phoneNumberResponse.last_page];
         } else {
@@ -58,33 +67,26 @@ export class ContactPhoneNumbersTableComponent implements OnInit, OnDestroy {
     }
   }
 
+
   onPageChange(page: number){
     this.page = page;
-    this.counter();
     this.loadDataIntoTable();
   }
 
   onNextPage(){
     if(this.page != this.phoneNumberResponse?.last_page){
       this.page = this.page + 1;
-      this.counter();
       this.loadDataIntoTable();
     }
   }
 
-  editPhoneNumber(phoneNumber: PhoneNumber){
-    this.phoneNumberSelected = phoneNumber;
-    this.sendPhoneNumberData();
+  editPhoneNumber(phoneNumberId: number){
+    this.phoneNumberService.setPhoneNumberSelected(phoneNumberId);
   }
 
-  sendPhoneNumberData(){
-    this.phoneNumberService.setPhoneNumberSelected(this.phoneNumberSelected);
-
-  }
   onPreviousPage(){
     if(this.page != 1){
       this.page = this.page - 1;
-      this.counter();
       this.loadDataIntoTable();
     }
   }
@@ -111,7 +113,6 @@ export class ContactPhoneNumbersTableComponent implements OnInit, OnDestroy {
 
   performSearch(searchValue: string) {
     this.page = 1;
-    this.counter();
     this.loadDataIntoTable(searchValue)
   }
   
@@ -127,6 +128,7 @@ export class ContactPhoneNumbersTableComponent implements OnInit, OnDestroy {
       this.phoneNumberService.getAllPhoneNumbersByContact(this.contactId ,searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
         this.phoneNumbers = response.data.phoneNumbers.data;
         this.phoneNumberResponse = response.data.phoneNumbers;
+        this.counter();
       });
     }
   }

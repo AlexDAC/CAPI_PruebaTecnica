@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import Toastify from 'toastify-js';
 import { ActivatedRoute } from '@angular/router';
@@ -15,10 +15,12 @@ export class ContactAddressTableComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private readonly debounceTimeMs = 300;
   addresses: Address[] = [];
+  addressService$?: Subscription;
+  reloadTable:boolean = false;
   addressResponse?: AddressResponseWithPagination;
   contactId?: number;
   addressSelected?: Address;
-  searchInput: string = '';
+  searchAddressInput: string = '';
   sortBy?: string;
   sortOrder?: string;
   pageSize?: number;
@@ -26,7 +28,15 @@ export class ContactAddressTableComponent implements OnInit, OnDestroy {
   pagination: number[] = [];
 
   constructor(private addressService: AddressService, private route: ActivatedRoute){
-   
+    this.addressService.getReloadAddressTable().subscribe({
+      next: (reload) => {
+        this.reloadTable = reload;
+        this.loadDataIntoTable();
+      },
+      error: () => {
+        this.reloadTable = false;
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -35,7 +45,6 @@ export class ContactAddressTableComponent implements OnInit, OnDestroy {
     this.searchSubject.pipe(debounceTime(this.debounceTimeMs)).subscribe((searchValue) => {
       this.performSearch(searchValue);
     });
-    this.counter();
   }
 
   ngOnDestroy() {
@@ -43,11 +52,12 @@ export class ContactAddressTableComponent implements OnInit, OnDestroy {
   }
 
   counter() {
-    if(this.addressResponse && this.addressResponse.data.length > 0){
+    if(this.addressResponse){
       if(this.addressResponse.data.length > 0){
-  
-        if(this.page >= 1 && this.page <= 3) {
-          this.pagination = [1,2,3,4,5]
+        if(this.addressResponse.last_page >= 1 && this.addressResponse.last_page <= 5) {
+          for(let i=0; i<this.addressResponse.last_page; i++){
+            this.pagination[i] = i + 1;
+          }
         } else if(this.page >= this.addressResponse.last_page-2 && this.page <= this.addressResponse.last_page){
           this.pagination = [this.addressResponse.last_page - 4, this.addressResponse.last_page - 3, this.addressResponse.last_page - 2, this.addressResponse.last_page - 1, this.addressResponse.last_page];
         } else {
@@ -59,26 +69,23 @@ export class ContactAddressTableComponent implements OnInit, OnDestroy {
 
   onPageChange(page: number){
     this.page = page;
-    this.counter();
     this.loadDataIntoTable();
   }
 
   onNextPage(){
     if(this.page != this.addressResponse?.last_page){
       this.page = this.page + 1;
-      this.counter();
       this.loadDataIntoTable();
     }
   }
 
-  editAddress(address: Address){
-    this.addressSelected = address;
+  editAddress(addressId: number): void{
+    this.addressService.setAddressSelected(addressId);
   }
 
   onPreviousPage(){
     if(this.page != 1){
       this.page = this.page - 1;
-      this.counter();
       this.loadDataIntoTable();
     }
   }
@@ -99,13 +106,12 @@ export class ContactAddressTableComponent implements OnInit, OnDestroy {
     this.loadDataIntoTable();
   }
 
-  onSearch(): void {
-    this.searchSubject.next(this.searchInput);
+  onSearchAddress(): void {
+    this.searchSubject.next(this.searchAddressInput);
   }
 
   performSearch(searchValue: string) {
     this.page = 1;
-    this.counter();
     this.loadDataIntoTable(searchValue)
   }
   
@@ -120,8 +126,8 @@ export class ContactAddressTableComponent implements OnInit, OnDestroy {
     if(this.contactId){
       this.addressService.getAllAddressesByContact(this.contactId ,searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
         this.addresses = response.data.addresses.data;
-        console.log(this.addresses);
         this.addressResponse = response.data.addresses;
+        this.counter();
       });
     }
   }

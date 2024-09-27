@@ -21,7 +21,7 @@
             <td>{{ phoneNumber.phone_number }}</td>
             <td class="table-data-action">
               <div>
-                  <button class="btn btn-link p-0" (click)="editPhoneNumber(phoneNumber)"><i class="ri-edit-box-line text-primary"></i></button>
+                  <button class="btn btn-link p-0" (click)="editPhoneNumber(phoneNumber.id)"><i class="ri-edit-box-line text-primary"></i></button>
                   <button class="btn btn-link p-0" (click)="deletePhoneNumber(phoneNumber.id)"><i class="ri-delete-bin-2-line text-danger"></i></button>
               </div>
             </td>

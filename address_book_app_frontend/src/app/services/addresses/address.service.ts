@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AddressForm, DataByIdResponse, DataResponse } from '../../models/address.model';
 
 @Injectable({
@@ -10,9 +10,27 @@ import { AddressForm, DataByIdResponse, DataResponse } from '../../models/addres
 export class AddressService {
   private readonly API_URL = environment.apiUrl + 'contacts';
   private url:string = '';
+  addressSelected = new BehaviorSubject<number>(0);
+  reloadAddressTable = new BehaviorSubject<boolean>(false);
   constructor(private http: HttpClient) { }
 
+  
+  setAddressSelected(addressId: number){
+    this.addressSelected.next(addressId);
+  }
 
+  getAddressSelected(){
+    return this.addressSelected.asObservable();
+  }
+
+  setReloadAddressTable(reload: boolean) {
+    this.reloadAddressTable.next(reload);
+  }
+
+  getReloadAddressTable(){
+    return this.reloadAddressTable.asObservable();
+  }
+  
   getAllAddressesByContact(
     contactId: number,
     searchBy: string, 

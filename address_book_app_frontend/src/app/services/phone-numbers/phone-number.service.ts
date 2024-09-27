@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { DataByIdResponse, DataResponse, PhoneNumber, PhoneNumberForm } from '../../models/phone_number.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,19 +10,25 @@ import { Observable } from 'rxjs';
 export class PhoneNumberService {
   private readonly API_URL = environment.apiUrl + 'contacts';
   private url:string = '';
-  private _phoneNumberSelected: PhoneNumber[] = [];
+  phoneNumberSelected = new BehaviorSubject<number>(0);
+  reloadPhoneNumberTable = new BehaviorSubject<boolean>(false);
   constructor(private http: HttpClient) { }
 
-
-  setPhoneNumberSelected(phoneNumberSelected?: PhoneNumber){
-    if(phoneNumberSelected){
-      this._phoneNumberSelected.push(phoneNumberSelected);
-    }
+  
+  setPhoneNumberSelected(phoneNumberId: number){
+    this.phoneNumberSelected.next(phoneNumberId);
   }
 
-  getPhoneNumberSelected(): PhoneNumber[] {
-    console.log(this._phoneNumberSelected);
-    return this._phoneNumberSelected;
+  getPhoneNumberSelected(){
+    return this.phoneNumberSelected.asObservable();
+  }
+
+  setReloadPhoneNumberTable(reload: boolean) {
+    this.reloadPhoneNumberTable.next(reload);
+  }
+
+  getReloadPhoneNumberTable(){
+    return this.reloadPhoneNumberTable.asObservable();
   }
 
   getAllPhoneNumbersByContact(

@@ -40,5 +40,5 @@ export interface DataByIdResponse {
 }
 
 export interface PhoneNumberResponse {
-    phone_number: PhoneNumber;
+    phoneNumber: PhoneNumber;
 }

@@ -40,5 +40,5 @@ export interface DataByIdResponse {
 }
 
 export interface EmailResponse {
-    Email: Email;
+    email: Email;
 }

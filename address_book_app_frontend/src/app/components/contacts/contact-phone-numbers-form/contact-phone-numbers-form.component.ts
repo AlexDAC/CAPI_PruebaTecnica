@@ -4,6 +4,7 @@ import { PhoneNumber, PhoneNumberForm } from '../../../models/phone_number.model
 import { ActivatedRoute, Router } from '@angular/router';
 import { PhoneNumberService } from '../../../services/phone-numbers/phone-number.service';
 import Toastify from 'toastify-js';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-contact-phone-numbers-form',
@@ -12,6 +13,7 @@ import Toastify from 'toastify-js';
 })
 export class ContactPhoneNumbersFormComponent implements OnInit {
   phoneNumberSelected?: PhoneNumber[];
+  phoneNumberService$?: Subscription;
   phoneNumberId?: number;
   contactId: number;
   phoneNumberForm: FormGroup  = new FormGroup({  
@@ -22,7 +24,6 @@ export class ContactPhoneNumbersFormComponent implements OnInit {
 
   constructor(
     private phoneNumberService: PhoneNumberService,
-    private router: Router,
     private route: ActivatedRoute
   ) { 
     this.phoneNumberFormData = {
@@ -30,39 +31,42 @@ export class ContactPhoneNumbersFormComponent implements OnInit {
       phone_number: '',
     };
     this.contactId = Number(this.route.snapshot.paramMap.get('id'));
+    this.phoneNumberService.getPhoneNumberSelected().subscribe({
+      next: (phoneId) => {
+        this.phoneNumberId = phoneId;
+        this.loadDataIntoForm();
+      },
+      error: () => {
+        this.phoneNumberId = undefined;
+      }
+    });
   }
 
   ngOnInit():void {
     this.loadDataIntoForm();
   }
 
-  getPhoneNumber(){
-    console.log(this.phoneNumberService.getPhoneNumberSelected());
-    this.phoneNumberSelected = this.phoneNumberService.getPhoneNumberSelected();
-  }
-
   private loadDataIntoForm(): void {
-    this.contactId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.contactId) {
-      this.phoneNumberService.getPhoneNumberById(this.contactId).subscribe(response => {       
-        this.phoneNumberForm.patchValue(response.data.phone_number);
+    if (this.phoneNumberId) {
+      this.phoneNumberService.getPhoneNumberById(this.phoneNumberId).subscribe(response => {       
+        this.phoneNumberForm.patchValue(response.data.phoneNumber);
       });
     }
   }
 
   savePhoneNumber(): void {
-    if (this.contactId && this.phoneNumberId) {
-      this.phoneNumberService.updatePhoneNumber(this.contactId, this.phoneNumberForm.value).subscribe(response => {
+    if (this.phoneNumberId) {
+      this.phoneNumberService.updatePhoneNumber(this.phoneNumberId, this.phoneNumberForm.value).subscribe(response => {
         this.showSuccessToast("Phone Number Updated Successfully");
-        this.router.navigate(['/contacts', this.contactId, 'edit']);
+        this.phoneNumberService.setPhoneNumberSelected(0);
+        this.phoneNumberService.setReloadPhoneNumberTable(true);
+        this.phoneNumberForm.reset();
       });   
     } else {
       this.phoneNumberService.createPhoneNumber(this.contactId, this.phoneNumberForm.value).subscribe(response => {
         this.showSuccessToast("Phone Number Created Successfully");
-        this.router.navigateByUrl('/contacts/' + this.contactId + '/edit',{skipLocationChange:true}).then(()=>{
-          this.router.navigate([`/contacts/${this.contactId}/edit`]).then(()=>{
-          })
-        });
+        this.phoneNumberService.setReloadPhoneNumberTable(true);
+        this.phoneNumberForm.reset();
       });
     }  
   }

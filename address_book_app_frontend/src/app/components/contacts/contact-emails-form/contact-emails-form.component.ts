@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Email, EmailForm } from '../../../models/email.model';
 import { EmailService } from '../../../services/emails/email.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-contact-emails-form',
@@ -12,7 +13,8 @@ import { EmailService } from '../../../services/emails/email.service';
 })
 export class ContactEmailsFormComponent implements OnInit {
   email?: Email[];
-  phoneNumberId?: number;
+  emailService$?: Subscription;
+  emailId?: number;
   contactId: number;
   emailForm: FormGroup  = new FormGroup({  
     email: new FormControl('', [Validators.required, Validators.maxLength(255), Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
@@ -30,6 +32,15 @@ export class ContactEmailsFormComponent implements OnInit {
       email: '',
     };
     this.contactId = Number(this.route.snapshot.paramMap.get('id'));
+    this.emailService.getEmailSelected().subscribe({
+      next: (emailId) => {
+        this.emailId = emailId;
+        this.loadDataIntoForm();
+      },
+      error: () => {
+        this.emailId = undefined;
+      }
+    });
   }
 
   ngOnInit():void {
@@ -37,27 +48,26 @@ export class ContactEmailsFormComponent implements OnInit {
   }
 
   private loadDataIntoForm(): void {
-    this.contactId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.contactId) {
-      this.emailService.getEmailById(this.contactId).subscribe(response => {       
-        this.emailForm.patchValue(response.data.Email);
+    if (this.emailId) {
+      this.emailService.getEmailById(this.emailId).subscribe(response => {       
+        this.emailForm.patchValue(response.data.email);
       });
     }
   }
 
-  savePhoneNumber(): void {
-    if (this.contactId && this.phoneNumberId) {
-      this.emailService.updateEmail(this.contactId, this.emailForm.value).subscribe(response => {
+  saveEmail(): void {
+    if (this.emailId) {
+      this.emailService.updateEmail(this.emailId, this.emailForm.value).subscribe(response => {
         this.showSuccessToast("Phone Number Updated Successfully");
-        this.router.navigate(['/contacts', this.contactId, 'edit']);
+        this.emailService.setEmailSelected(0);
+        this.emailService.setReloadEmailTable(true);
+        this.emailForm.reset();
       });   
     } else {
       this.emailService.createEmail(this.contactId, this.emailForm.value).subscribe(response => {
         this.showSuccessToast("Phone Number Created Successfully");
-        this.router.navigateByUrl('/contacts/' + this.contactId + '/edit',{skipLocationChange:true}).then(()=>{
-          this.router.navigate([`/contacts/${this.contactId}/edit`]).then(()=>{
-          })
-        });
+        this.emailService.setReloadEmailTable(true);
+        this.emailForm.reset();
       });
     }  
   }
