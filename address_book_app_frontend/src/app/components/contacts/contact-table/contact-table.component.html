@@ -20,9 +20,8 @@
           <th scope="col">Name</th>
           <th scope="col">Notes</th>
           <th scope="col">Birth</th>
-          <th scope="col">Web Page Url</th>
+          <th scope="col">Web Page Url</th> 
           <th scope="col">Company Name</th>
-          <th scope="col">Phone Number</th>
           <th scope="col" class="table-head-action"></th>
         </tr>
       </thead>
@@ -35,11 +34,13 @@
             <td>{{ contact.birth_date}}</td>
             <td>{{ contact.web_page_url ? contact.web_page_url : 'Withour Web Page'}}</td>
             <td>{{ contact.company_name ? contact.company_name : 'Without Company'}}</td>
-            <td>{{ contact.phone_numbers.length > 0 ? contact.phone_numbers[0].phone_number : 'Without Number'}}</td>
             <td class="table-data-action">
               <div>
+                <button type="button" (click)="onView(contact)" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#Modal">
+                  <i class="ri-eye-fill text-secondary"></i>
+                </button>
                 <a [routerLink]="['/contacts', contact.id, 'edit']"><i class="ri-edit-box-line text-primary"></i></a>
-                <button class="btn btn-link p-0"><i class="ri-delete-bin-2-line text-danger"></i></button>
+                <button class="btn btn-link p-0" (click)="deleteContact(contact.id)"><i class="ri-delete-bin-2-line text-danger"></i></button>
               </div>
             </td>
           </tr>
@@ -84,4 +85,5 @@
             </nav>
         </div>
     </div>
+    <app-contact-modal [contact]="contactSelected"></app-contact-modal>
 </div>

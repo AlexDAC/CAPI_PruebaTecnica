@@ -14,7 +14,7 @@ export interface Address {
 }
 
 export interface AddressForm {
-    id: number;
+    id: number | null;
     street: string;
     external_number: string;
     internal_number?: string;
@@ -23,5 +23,38 @@ export interface AddressForm {
     city: string;
     state: string;
     country: string;
-    status: string;
 }
+
+export interface DataResponse{
+    data: Response;
+    message: string;
+}
+
+export interface Response {
+    addresses: AddressResponseWithPagination;
+}
+
+export interface AddressResponseWithPagination{
+    current_page: number;
+    data: Address[] | [];
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    next_page_url: string;
+    per_page: number;
+    prev_page_url: string;
+    to: number
+    total: number,
+}
+
+
+export interface DataByIdResponse {
+    data: AddressResponse;
+}
+
+export interface AddressResponse {
+    addresses: Address;
+}
+
+

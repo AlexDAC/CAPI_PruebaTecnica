@@ -15,14 +15,14 @@ export class ContactTableComponent implements OnInit, OnDestroy {
   private readonly debounceTimeMs = 300;
   contacts: Contact[] = [];
   contactResponse: ContactResponseWithPagination;
+  contactSelected?: Contact;
   searchInput: string = '';
   sortBy?: string;
   sortOrder?: string;
   pageSize?: number;
   page: number = 1;
-  currentPage: number = 1;
   pagination: number[] = [];
-  
+
   constructor(private contactService: ContactService){
     this.contactResponse = {
       current_page: 1,
@@ -76,6 +76,11 @@ export class ContactTableComponent implements OnInit, OnDestroy {
     }
   }
 
+  onView(contact: Contact){
+    this.contactSelected = contact;
+
+  }
+
   onPreviousPage(){
     if(this.page != 1){
       this.page = this.page - 1;
@@ -109,12 +114,17 @@ export class ContactTableComponent implements OnInit, OnDestroy {
     this.counter();
     this.loadDataIntoTable(searchValue)
   }
+  
+  deleteContact(id: number): void {
+    this.contactService.deleteContact(id).subscribe(response => {
+      this.showSuccessToast('Contact deleted successfully');
+      this.loadDataIntoTable();
+    });
+  }
 
   private loadDataIntoTable(searchBy: string = ''): void {
     this.contactService.getAllContacts(searchBy, this.sortBy, this.sortOrder, this.page, this.pageSize).subscribe((response) => {
       this.contacts = response.data.contacts.data;
-      console.log(this.contacts[5].phone_numbers.length);
-      console.log(this.contacts[5])
       this.contactResponse = response.data.contacts;
     });
   }

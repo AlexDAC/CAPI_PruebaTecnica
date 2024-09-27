@@ -1,0 +1,71 @@
+<form class="mb-5 mt-4" [formGroup]="addressForm" (ngSubmit)="savePhoneNumber()">
+    <div class="row col-12">
+      <div class="mb-3 col-12">
+        <label for="streetInput" class="form-label">Street</label>
+        <input type="text" formControlName="street" class="form-control {{ hasError('street') ? 'is-invalid' : '' }}" id="streetInput" placeholder="Example Example">
+        <div class="invalid-feedback" [ngSwitch]="getCurrentError('street')">
+          <span *ngSwitchCase="'required'">The field is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="row col-12">
+      <div class="mb-3 col-12 col-sm-6">
+        <label for="externalInput" class="form-label">External Number</label>
+        <input type="text" formControlName="external_number" class="form-control {{ hasError('external_number') ? 'is-invalid' : '' }}" id="externalInput" placeholder="Example Example">
+        <div class="invalid-feedback" [ngSwitch]="getCurrentError('external_number')">
+          <span *ngSwitchCase="'required'">The field is required</span>
+        </div>
+      </div>
+      <div class="mb-3 col-12 col-sm-6">
+        <label for="internalInput" class="form-label">Internal Number</label>
+        <input type="text" formControlName="internal_number" class="form-control {{ hasError('internal_number') ? 'is-invalid' : '' }}" id="internalInput" placeholder="Example Example">
+        <div class="invalid-feedback" [ngSwitch]="getCurrentError('internal_number')">
+          <span *ngSwitchCase="'required'">The field is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="row col-12">
+      <div class="mb-3 col-12">
+        <label for="neighbourhoodInput" class="form-label">Neighborhood</label>
+        <input type="text" formControlName="neighbourhood" class="form-control {{ hasError('neighbourhood') ? 'is-invalid' : '' }}" id="neighbourhoodInput" placeholder="Example Example">
+        <div class="invalid-feedback" [ngSwitch]="getCurrentError('neighbourhood')">
+          <span *ngSwitchCase="'required'">The field is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="row col-12">
+      <div class="mb-3 col-12 col-sm-6">
+        <label for="zipCodeInput" class="form-label">Zip Code</label>
+        <input type="text" formControlName="zip_code" class="form-control {{ hasError('zip_code') ? 'is-invalid' : '' }}" id="zipCodeInput" placeholder="Example Example">
+        <div class="invalid-feedback" [ngSwitch]="getCurrentError('zip_code')">
+          <span *ngSwitchCase="'required'">The field is required</span>
+        </div>
+      </div>
+      <div class="mb-3 col-12 col-sm-6">
+        <label for="cityInput" class="form-label">City</label>
+        <input type="text" formControlName="city" class="form-control {{ hasError('city') ? 'is-invalid' : '' }}" id="cityInput" placeholder="Example Example">
+        <div class="invalid-feedback" [ngSwitch]="getCurrentError('city')">
+          <span *ngSwitchCase="'required'">The field is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="row col-12">
+          <div class="mb-3 col-12 col-sm-6">
+            <label for="stateInput" class="form-label">State</label>
+            <input type="text" formControlName="state" class="form-control {{ hasError('state') ? 'is-invalid' : '' }}" id="stateInput" placeholder="Example Example">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('state')">
+              <span *ngSwitchCase="'required'">The field is required</span>
+            </div>
+          </div>
+          <div class="mb-3 col-12 col-sm-6">
+            <label for="countryInput" class="form-label">Country</label>
+            <input type="text" formControlName="country" class="form-control {{ hasError('country') ? 'is-invalid' : '' }}" id="countryInput" placeholder="Example Example">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('country')">
+              <span *ngSwitchCase="'required'">The field is required</span>
+            </div>
+          </div>
+    </div>
+    <div class="row col-12 w-full buttons">
+        <button type="submit" class="btn btn-primary mb-2 m-sm-3 col-11 col-sm-2" [disabled]="this.addressForm.invalid">Save</button>
+    </div>
+</form>

@@ -1,0 +1,71 @@
+<div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="Modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="Modal">Contact Information</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-2xl">
+            <ng-container *ngIf="contact; else noInformation">
+                <h4 class="modal-title text-bold">General Information</h4>
+                <div class="row col-12">
+                    <span class="col-12 col-sm-12"><strong>Name: </strong>{{contact.name}}</span>
+                </div>
+                <div class="row col-12">
+                    <span class="col-12 col-sm-12"><strong>Birth Date:</strong> {{contact.birth_date}}</span>                
+                </div>
+                <div class="row col-12">
+                    <span class="col-12 col-sm-12"><strong>Company Name:</strong> {{contact.company_name ? contact.company_name : "Without Company"}}</span>
+                </div>
+                <div class="row col-12">
+                    <span class="col-12 col-sm-12"><strong>web Page Url:</strong> {{contact.web_page_url ? contact.web_page_url : "Without Web Page"}}</span>
+                </div>
+                <div class="divide-x-2"></div>
+                <h4 class="modal-title text-bold">Phone Numbers</h4>
+                <ng-container *ngIf="contact.phone_numbers && contact.phone_numbers.length > 0; else emptyPhoneNumber">
+                    <div *ngFor="let phone_number of contact.phone_numbers; let i = index">
+                        <span><strong>Phone Number {{i + 1}}:</strong> {{phone_number.phone_number}}</span>
+                    </div>
+                </ng-container>
+                <ng-template #emptyPhoneNumber>
+                        <div>
+                        <span>There aren't phone numbers to show</span>
+                        </div>
+                </ng-template>
+                <div class="divide-x-2"></div>
+                <h4 class="modal-title text-bold">Emails</h4>
+                <ng-container *ngIf="contact.emails && contact.emails.length > 0; else emptyEmails">
+                    <div *ngFor="let email of contact.emails; let i = index">
+                        <span><strong>Email {{i + 1}}:</strong> {{email.email}}</span>
+                    </div>
+                </ng-container>
+                <ng-template #emptyEmails>
+                        <div>
+                        <span>There aren't emails to show</span>
+                        </div>
+                </ng-template>
+                <div class="divide-x-2"></div>
+                <h4 class="modal-title text-bold">Addresses</h4>
+                <ng-container *ngIf="contact.addresses && contact.addresses.length > 0; else emptyAddresses">
+                    <div *ngFor="let address of contact.addresses; let i = index">
+                        <span><strong>Address {{i + 1}}:</strong> {{address.full_address}}</span>
+                    </div>
+                </ng-container>
+                <ng-template #emptyAddresses>
+                        <div>
+                        <span>There aren't addresses to show</span>
+                        </div>
+                </ng-template>
+            </ng-container>
+            <ng-template #noInformation>
+                <div>
+                <span>There isn't information to show</span>
+                </div>
+            </ng-template>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

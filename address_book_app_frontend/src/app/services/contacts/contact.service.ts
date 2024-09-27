@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { ContactResponse, DataByIdResponse, DataResponse } from '../../models/contact.model';
+import { Contact, ContactResponse, DataByIdResponse, DataResponse, FormContact } from '../../models/contact.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -36,5 +36,17 @@ export class ContactService {
   getContactById(id: number): Observable<DataByIdResponse> {
     this.url = `${this.API_URL}/${id}`;
     return this.http.get<DataByIdResponse>(this.url);
+  }
+
+  createContact(data: FormContact): Observable<DataByIdResponse> {
+    return this.http.post<DataByIdResponse>(`${this.API_URL}`, data);
+  }
+
+  updateContact(id: number, data: FormContact): Observable<DataByIdResponse> {
+    return this.http.put<DataByIdResponse>(`${this.API_URL}/${id}`, data);
+  }
+
+  deleteContact(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
 }

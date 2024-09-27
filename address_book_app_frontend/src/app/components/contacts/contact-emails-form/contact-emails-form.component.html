@@ -1,0 +1,15 @@
+<form class="mb-5 mt-4" [formGroup]="emailForm" (ngSubmit)="saveEmail()">
+    <div class="row col-12">
+        <div class="mb-3 col-12 col-sm-6">
+            <label for="emailInput" class="form-label">Email</label>
+            <input type="text" formControlName="email" class="form-control {{ hasError('email') ? 'is-invalid' : '' }}" id="emailInput" placeholder="ex: example@example.com">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('email')">
+                <span *ngSwitchCase="'required'">The field is required</span>
+                <span *ngSwitchCase="'maxlength'">The field allow a maxium of 255 characters</span>
+            </div>
+        </div>
+    </div>
+    <div class="row col-12 w-full buttons">
+        <button type="submit" class="btn btn-primary mb-2 m-sm-3 col-11 col-sm-2" [disabled]="this.emailForm.invalid">Save</button>
+    </div>
+</form>

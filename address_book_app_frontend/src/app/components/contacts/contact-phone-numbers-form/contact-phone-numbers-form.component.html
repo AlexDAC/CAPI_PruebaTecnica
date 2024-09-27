@@ -1,0 +1,16 @@
+<form class="mb-5 mt-4" [formGroup]="phoneNumberForm" (ngSubmit)="savePhoneNumber()">
+    <div class="row col-12">
+        <div class="mb-3 col-12 col-sm-6">
+            <label for="phoneNumberInput" class="form-label">Name</label>
+            <input type="text" formControlName="phone_number" class="form-control {{ hasError('phone_number') ? 'is-invalid' : '' }}" id="phoneNumberInput" placeholder="ex: 8711253366">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('phone_number')">
+                <span *ngSwitchCase="'required'">The field is required</span>
+                <span *ngSwitchCase="'maxlength'">The field allow a maxium of 10 characters</span>
+                <span *ngSwitchCase="'minlegth'">The field allow a minium of 10 characters</span>
+            </div>
+        </div>
+    </div>
+    <div class="row col-12 w-full buttons">
+        <button type="submit" class="btn btn-primary mb-2 m-sm-3 col-11 col-sm-2" [disabled]="this.phoneNumberForm.invalid">Save</button>
+    </div>
+</form>

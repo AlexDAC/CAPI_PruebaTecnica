@@ -1,0 +1,48 @@
+<form class="mb-5 mt-4" [formGroup]="contactForm" (ngSubmit)="saveContact()">
+    <div class="row col-12">
+        <div class="mb-3 col-12 col-sm-6">
+            <label for="nameInput" class="form-label">Name</label>
+            <input type="text" formControlName="name" class="form-control {{ hasError('name') ? 'is-invalid' : '' }}" id="nameInput" placeholder="ex: Luis Ibarra">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('name')">
+                <span *ngSwitchCase="'required'">The field is required</span>
+                <span *ngSwitchCase="'maxlength'">The field allow a maxium of 255 characters</span>
+            </div>
+        </div>
+        <div class="mb-3 col-12 col-sm-6">
+            <label for="birthDateInput" class="form-label">Birth Date</label>
+            <input type="date" formControlName="birth_date" class="form-control {{ hasError('birth_date) ? 'is-invalid' : '' }}" id="birthDateInput" placeholder="ex: 01/01/1995">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('birth_date')">
+                <span *ngSwitchCase="'required'">The field is required</span>
+            </div>
+        </div>      
+    </div>
+    <div class="row col-12">
+        <div class="mb-3 col-12 col-sm-6">
+            <label for="webPageUrlInput" class="form-label">Web Page Url</label>
+            <input type="text" formControlName="web_page_url" class="form-control {{ hasError('web_page_url') ? 'is-invalid' : '' }}" id="webPageUrlInput" placeholder="ex: http://localhost.com">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('surname')">
+                <span *ngSwitchCase="'maxlength'">The field allow a maxium of 255 characters</span>
+            </div>
+        </div>
+        <div class="mb-3 col-12 col-sm-6">
+        <label for="companyNameInput" class="form-label">Company Name</label>
+            <input type="text" formControlName="company_name" class="form-control {{ hasError('company_name') ? 'is-invalid' : '' }}" id="companyNameInput" placeholder="ex: capi">
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('company_name')">
+                <span *ngSwitchCase="'maxlength'">The field allow a maxium of 255 characters</span>
+            </div>
+        </div>      
+    </div>
+    <div class="row col-12">
+        <div class="mb-3 col-12 col-sm-12">
+            <label for="notesText" class="form-label">Notes</label>
+            <textarea formControlName="notes" class="form-control" id="notesText" rows="3"></textarea>
+            <div class="invalid-feedback" [ngSwitch]="getCurrentError('notes')" placeholder="ex: he's my best friend">
+                <span *ngSwitchCase="'maxlength'">The field allow a maxium of 255 characters</span>
+            </div>
+        </div>
+    </div>
+    <div class="row col-12 w-full buttons">
+        <button type="submit" class="btn btn-primary mb-2 m-sm-3 col-11 col-sm-2" [disabled]="this.contactForm.invalid">Save</button>
+        <a class="btn btn-outline-secondary col-11 col-sm-2 m-sm-3" routerLink="/contacts">Cancel</a>
+    </div>
+</form>

@@ -1,6 +1,6 @@
-import { Address, AddressForm } from "./address.model";
-import { Email, EmailForm } from "./email.model";
-import { PhoneNumber, PhoneNumberForm } from './phone_number.model';
+import { Address } from "./address.model";
+import { Email } from "./email.model";
+import { PhoneNumber } from './phone_number.model';
 
 export interface Contact {
     id: number;
@@ -11,7 +11,7 @@ export interface Contact {
     company_name: string;
     addresses?: Address[];
     emails?: Email[];
-    phone_numbers: PhoneNumber[];    
+    phone_numbers?: PhoneNumber[];    
     created_at?: string;
     updated_at?: string;
 }
@@ -23,15 +23,11 @@ export interface FormContact {
     birth_date: string;
     web_page_url: string;
     company_name: string;
-    addresses?: AddressForm[];
-    emails?: EmailForm[];
-    phone_numbers: PhoneNumberForm[];
 }
 
 export interface DataResponse{
     data: Response;
     message: string;
-
 }
 
 export interface Response {

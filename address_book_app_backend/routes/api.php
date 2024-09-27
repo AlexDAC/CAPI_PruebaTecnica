@@ -41,7 +41,7 @@ Route::prefix('/contacts')->group(function () {
     Route::post('/{contact}/emails', [EmailController::class, 'store'])
         ->name('contact_emails.store');
 
-    Route::get('/phone-numbers/{phoneNumber}', [ContactController::class, 'show'])
+    Route::get('/phone-numbers/{phoneNumber}', [PhoneNumberController::class, 'show'])
         ->name('contact_phone_numbers.show');
 
     Route::put('/phone-numbers/{phoneNumber}', [PhoneNumberController::class, 'update'])
