@@ -2,13 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\AddressStatus;
-use App\Enums\EmailStatus;
-use App\Enums\PhoneNumberStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpsertContactRequest extends FormRequest
+class UpsertEmailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,11 +22,7 @@ class UpsertContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'notes' => ['nullable', 'string', 'max:255'],
-            'birth_date' => ['required', 'date'],
-            'web_page_url' => ['nullable', 'url', 'max:300'],
-            'company_name' => ['nullable', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
         ];
     }
 }

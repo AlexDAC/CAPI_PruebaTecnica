@@ -78,10 +78,7 @@ class ContactController extends Controller
         try {
             $data = $request->validated();
             $contact = $this->writeContactInterface->store($data);
-            $this->writePhoneNumberInterface->executeAction($data, $contact);
-            $this->writeAddressInterface->executeAction($data, $contact);
-            $this->writeEmailInterface->executeAction($data, $contact);
-            return ApiResponse::created();
+            return ApiResponse::created(['contact' => $contact]);
         } catch (InvalidArgumentException $e) {
             return ApiResponse::serverError(null, null, $e->getMessage());
         } 
@@ -127,10 +124,7 @@ class ContactController extends Controller
         try{
             $data = $request->validated();
             $contact = $this->writeContactInterface->update($contact, $data);
-            $this->writePhoneNumberInterface->executeAction($data, $contact);
-            $this->writeAddressInterface->executeAction($data, $contact);
-            $this->writeEmailInterface->executeAction($data, $contact);
-            return ApiResponse::success();
+            return ApiResponse::success(['contact' => $contact]);
         } catch (Exception | Error $e) {
             return ApiResponse::serverError(null, null, $e->getMessage());
         }
